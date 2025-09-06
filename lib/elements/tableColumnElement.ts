@@ -247,6 +247,10 @@ export class TableColumnElement extends BaseElement {
 
     return attributes
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(TableColumnElement, "КолонкаТаблицы")

@@ -1,12 +1,46 @@
-import { CstNode, IToken } from "chevrotain"
+import { CstChildrenDictionary, CstNode, IToken } from "chevrotain"
 
-interface ItemCstNode {
+interface IPropertiesCstNode extends CstNode {
+  readonly children: IPropertiesCstChildrenDictionary
+}
+
+interface IPropertiesCstChildrenDictionary extends CstChildrenDictionary {
+  property: IPropertyCstNode[]
+}
+
+interface IPropertyCstNode extends CstNode {
+  readonly children: IPropertyCstChildrenDictionary
+}
+
+interface IPropertyCstChildrenDictionary extends CstChildrenDictionary {
+  PropertiesNameText: IToken[]
+  propertyValues: IPropertyValuesCstNode[]
+}
+
+interface IPropertyValuesCstNode extends CstNode {
+  readonly children: IPropertyValuesCstChildrenDictionary
+}
+
+interface IPropertyValuesCstChildrenDictionary extends CstChildrenDictionary {
+  PropertiesValueText: IToken[]
+  propertyValueOption: IPropertyValueOptionCstNode[]
+}
+
+interface IPropertyValueOptionCstNode extends CstNode {
+  readonly children: IPropertyValueOptionCstChildrenDictionary
+}
+
+interface IPropertyValueOptionCstChildrenDictionary extends CstChildrenDictionary {
+  PropertiesValueOptionText: IToken[]
+}
+
+interface IItemCstNode {
   name: string
-  children: { Items: (CstNode | IToken)[]; Properties: any[] }
+  children: { Items: (CstNode | IToken)[]; Properties: IPropertiesCstNode[] }
 }
 
 export abstract class TreeNode {
-  item: ItemCstNode = {
+  item: IItemCstNode = {
     name: "",
     children: { Items: [], Properties: [] },
   }

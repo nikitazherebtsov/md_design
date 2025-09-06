@@ -30,6 +30,15 @@ export class InputElement extends BaseElementWithAttributes {
   public get isContainer(): boolean {
     return false
   }
+
+  public canBeInOneLine(): boolean {
+    return !this.isMultiline()
+  }
+
+  public isMultiline(): boolean {
+    const height = this.getProperty("Высота") as number
+    return this.getProperty("МногострочныйРежим") === true && height > 1
+  }
 }
 
 PlainToClassDiscriminator.addClass(InputElement, "ПолеВвода")

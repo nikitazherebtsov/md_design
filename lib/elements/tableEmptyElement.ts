@@ -16,6 +16,10 @@ export class TableEmptyElement extends BaseElement {
   public get isContainer(): boolean {
     return false
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(TableEmptyElement, "ПустойЭлементТаблицы")

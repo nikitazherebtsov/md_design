@@ -37,6 +37,10 @@ export class TableColumnGroupElement extends BaseElementWithoutAttributes {
     }
     return columns
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(TableColumnGroupElement, "ГруппаКолонокТаблицы")

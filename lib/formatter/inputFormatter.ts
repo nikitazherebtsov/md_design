@@ -1,11 +1,15 @@
 import { InputElement } from "../elements/inputElement"
 import * as t from "../parser/lexer"
-import { IFormatter } from "./formFormatter"
-import { FormFormatterFactory } from "./formatterFactory"
-import { FormatterUtils } from "./formatterUtils"
+import { IFormatterParams } from "./interfaces"
+import { FormatterFactory } from "./formatterFactory"
+import { FormatterUtils } from "./helpers/formatterUtils"
+import { BaseElementMatcherStrategy } from "./matcher/baseElementMatcherStrategy"
+import { ConditionWrapInGroupStrategy } from "./indentation/conditionWrapInGroupStrategy"
+import { BaseFormatter } from "./baseFormatter"
+import { PropertiesFormatter } from "./propertiesFormatter"
 
-export class InputFormatter implements IFormatter<InputElement> {
-  public format(element: InputElement): string[] {
+export class InputFormatter extends BaseFormatter<InputElement> {
+  public format(element: InputElement, _params: IFormatterParams): string[] {
     const underline = t.Underscore.LABEL as string
 
     let header: string = FormatterUtils.getAlignmentAtLeft(element)
@@ -40,35 +44,38 @@ export class InputFormatter implements IFormatter<InputElement> {
       excludeProperties.push("МногострочныйРежим")
     }
 
-    const propertiesFormatter = FormFormatterFactory.getPropertiesFormatter()
-    const properties = propertiesFormatter.format(element, {
+    const properties = PropertiesFormatter.render(element, {
       excludeProperties: excludeProperties,
     })
 
-    let result = header + value + properties.join("") + FormatterUtils.getAlignmentAtRight(element)
+    let result = [header + value + properties.join("") + FormatterUtils.getAlignmentAtRight(element)]
 
-    result += this.getMultilineString(element, header.length, value.length)
+    result.push(...this.getMultilineString(element, header.length, value.length))
 
-    return [result]
+    return result
   }
 
   private isMultiline(element: InputElement): boolean {
-    const height = element.getProperty("Высота") as number
-    return element.getProperty("МногострочныйРежим") === true && height > 1
+    return element.isMultiline()
   }
 
-  private getMultilineString(element: InputElement, headerLength: number, valueLength: number): string {
+  private getMultilineString(element: InputElement, headerLength: number, valueLength: number): string[] {
     if (!this.isMultiline(element)) {
-      return ""
+      return []
     }
 
     const underline = t.Underscore.LABEL as string
     const height = element.getProperty("Высота") as number
 
-    let multilineStringTemplate = "\n" + " ".repeat(headerLength) + underline.repeat(valueLength)
-    let multilineString = multilineStringTemplate.repeat(height - 1)
+    let multilineStringTemplate = " ".repeat(headerLength) + underline.repeat(valueLength)
 
-    return multilineString
+    const result: string[] = []
+
+    for (let i = 0; i < height - 1; i++) {
+      result.push(multilineStringTemplate)
+    }
+
+    return result
   }
 
   private getModificators(element: InputElement): string {
@@ -86,3 +93,7 @@ export class InputFormatter implements IFormatter<InputElement> {
       .join("")
   }
 }
+
+FormatterFactory.register(
+  new InputFormatter(new BaseElementMatcherStrategy(InputElement), new ConditionWrapInGroupStrategy())
+)

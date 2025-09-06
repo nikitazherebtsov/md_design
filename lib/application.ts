@@ -117,8 +117,7 @@ export class Application implements IApplication {
   }
 
   public formatTypeDescription(typeDescription: ITypeDescription): string {
-    const formatter = new PropertiesFormatter()
-    return formatter.formatTypeDescription(typeDescription)
+    return PropertiesFormatter.formatTypeDescription(typeDescription)
   }
 
   public parseTypeDescription(text: string): ITypeDescription {

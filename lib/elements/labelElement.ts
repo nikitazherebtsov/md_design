@@ -14,6 +14,10 @@ export class LabelElement extends BaseElementWithoutAttributes {
   public get isContainer(): boolean {
     return false
   }
+
+  public canBeInOneLine(): boolean {
+    return true
+  }
 }
 
 PlainToClassDiscriminator.addClass(LabelElement, "Надпись")

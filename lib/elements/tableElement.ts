@@ -94,6 +94,10 @@ export class TableElement extends BaseElementWithAttributes {
     attributes.push(attribute)
     return attributes
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(TableElement, "Таблица")

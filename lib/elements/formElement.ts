@@ -26,6 +26,10 @@ export class FormElement extends BaseElementWithoutAttributes {
   public get isContainer(): boolean {
     return true
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(FormElement, "Форма")

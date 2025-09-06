@@ -1,7 +1,7 @@
 import { TableColumnGroupElement } from "@/elements/tableColumnGroupElement"
 import { PropertyAlignment } from "@/elements/types"
-import { FormFormatterFactory } from "../formatterFactory"
-import { FormatterUtils } from "../formatterUtils"
+import { FormatterFactory } from "../formatterFactory"
+import { FormatterUtils } from "../helpers/formatterUtils"
 import { TableFormatterRowCell } from "./tableFormatterRowCell"
 import { TableHeaderElement, TableHeaderElementExt } from "@/elements/tableElement"
 import { ConvertableTreeNode, ITableFormatterCell } from "./interfaces"
@@ -19,7 +19,7 @@ export class TableFormatterColumn implements ITableFormatterCell, ConvertableTre
 
   constructor(element: TableHeaderElement) {
     this.element = element
-    this.value = FormFormatterFactory.getFormatter(element).format(element).join("")
+    this.value = FormatterFactory.render(element).join("")
     this.calculatedLength = Math.max(this.MIN_COLUMN_WIDTH, this.value.length + this.items.length)
   }
 

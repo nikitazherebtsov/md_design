@@ -17,8 +17,7 @@ test("Format types", () => {
   const after = "Справочник.Контрагенты"
 
   const typeDescription = CSTGenerator.buildTypeDescription(before)
-  const formatter = new PropertiesFormatter()
-  const result = formatter.formatTypeDescription(typeDescription)
+  const result = PropertiesFormatter.formatTypeDescription(typeDescription)
 
   expect(result).toBe(cleanString(after))
 })
@@ -28,8 +27,7 @@ test("Format complextypes", () => {
   const after = "Документ.Реализация, Справочник.Контрагенты"
 
   const typeDescription = CSTGenerator.buildTypeDescription(before)
-  const formatter = new PropertiesFormatter()
-  const result = formatter.formatTypeDescription(typeDescription)
+  const result = PropertiesFormatter.formatTypeDescription(typeDescription)
 
   expect(result).toBe(cleanString(after))
 })
@@ -39,8 +37,7 @@ test("Format types with params", () => {
   const after = "Число(10)"
 
   const typeDescription = CSTGenerator.buildTypeDescription(before)
-  const formatter = new PropertiesFormatter()
-  const result = formatter.formatTypeDescription(typeDescription)
+  const result = PropertiesFormatter.formatTypeDescription(typeDescription)
 
   expect(result).toBe(cleanString(after))
 })

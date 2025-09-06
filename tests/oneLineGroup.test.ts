@@ -63,3 +63,14 @@ test("Second empty in group", () => {
 
   expectFormattedText(before, after)
 })
+
+test("Horizontal group into one-line group", () => {
+  const before = `
+# #
+  Элемент группы 1 + Элемент группы 2`
+
+  const after = `
+Элемент группы 1 & Элемент группы 2`
+
+  expectFormattedText(before, after)
+})

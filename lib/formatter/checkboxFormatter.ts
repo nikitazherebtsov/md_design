@@ -1,16 +1,18 @@
 import { CheckboxElement } from "../elements/checkboxElement"
-import { FormFormatterFactory } from "./formatterFactory"
-import { IFormatter } from "./formFormatter"
-import { FormatterUtils } from "./formatterUtils"
+import { FormatterFactory } from "./formatterFactory"
+import { FormatterUtils } from "./helpers/formatterUtils"
+import { BaseFormatter } from "./baseFormatter"
+import { BaseElementMatcherStrategy } from "./matcher/baseElementMatcherStrategy"
+import { ConditionWrapInGroupStrategy } from "./indentation/conditionWrapInGroupStrategy"
+import { PropertiesFormatter } from "./propertiesFormatter"
 
-export class CheckboxFormatter implements IFormatter<CheckboxElement> {
+export class CheckboxFormatter extends BaseFormatter<CheckboxElement> {
   public format(element: CheckboxElement): string[] {
     let excludeProperties = ["Заголовок", "ГоризонтальноеПоложениеВГруппе", "ПоложениеЗаголовка", "ВидФлажка"]
 
     FormatterUtils.excludeStretchProperties(excludeProperties, element)
 
-    const propertiesFormatter = FormFormatterFactory.getPropertiesFormatter()
-    const properties = propertiesFormatter.format(element, { excludeProperties })
+    const properties = PropertiesFormatter.render(element, { excludeProperties })
 
     let header = element.getProperty("Заголовок") as string
 
@@ -30,3 +32,7 @@ export class CheckboxFormatter implements IFormatter<CheckboxElement> {
     return [result]
   }
 }
+
+FormatterFactory.register(
+  new CheckboxFormatter(new BaseElementMatcherStrategy(CheckboxElement), new ConditionWrapInGroupStrategy())
+)

@@ -1,5 +1,4 @@
-import { FormFormatterFactory } from "../formatterFactory"
-import { TableCellFormatter } from "./tableCellFormatter"
+import { FormatterFactory } from "../formatterFactory"
 import { TableFormatterColumn } from "./tableFormatterColumn"
 import { TableCellElement } from "@/elements/tableCellElement"
 import { CellTextAligner } from "./cellTextAligner"
@@ -10,8 +9,10 @@ export class TableFormatterRowCell implements ITableFormatterCell {
   private readonly value: string = ""
 
   constructor(element: TableCellElement, column: TableFormatterColumn, isFirst: boolean, level: number) {
-    const formatter = FormFormatterFactory.getFormatter(element) as TableCellFormatter
-    this.value = formatter.format(element, { isFirst: isFirst, level: level }).join("")
+    this.value = FormatterFactory.render(element, {
+      isFirst: isFirst,
+      level: level,
+    }).join("")
 
     this.column = column
     this.column.addCell(this)

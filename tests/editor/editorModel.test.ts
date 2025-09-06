@@ -64,3 +64,27 @@ test("unregister after remove element", () => {
 
   expect(onUnregisterCursorMock).toHaveBeenCalled()
 })
+
+test("set group cursor text", () => {
+  const text = `
+    # # 
+    Элемент 1+ Элемент 2`
+
+  const model = new CSTModel()
+  const mainCursor = new ModelCursor(model, new MainCursorBuilder(), new MainCursorFormatter())
+  model.registerCursor(mainCursor)
+  mainCursor.text = text
+
+  const cursor = new ModelCursor(model, new GroupCursorBuilder(), new GroupCursorFormatter())
+  model.registerCursor(cursor)
+  const path = model.getPathByElementId("Элемент1") as CstPath
+  cursor.path = path
+  cursor.text = "Элемент 1\nЭлемент 3"
+
+  expect(mainCursor.text).toEqual(
+    cleanString(`
+#           #
+  Элемент 1 +Элемент 2
+  Элемент 3 +`)
+  )
+})

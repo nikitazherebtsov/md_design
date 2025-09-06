@@ -26,6 +26,10 @@ export class PagesElement extends BaseElementWithoutAttributes {
   public get isContainer(): boolean {
     return false
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(PagesElement, "Страницы")

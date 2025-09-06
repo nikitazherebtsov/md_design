@@ -23,6 +23,10 @@ export class RadioButtonElement extends BaseElementWithAttributes {
   public get isContainer(): boolean {
     return false
   }
+
+  public canBeInOneLine(): boolean {
+    return true
+  }
 }
 
 PlainToClassDiscriminator.addClass(RadioButtonElement, "ПолеПереключателя")

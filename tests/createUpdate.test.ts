@@ -4,7 +4,7 @@ import { ModelCursor, MainCursorBuilder, MainCursorFormatter } from "@/editor"
 import { ElementPathData } from "@/elementPathData"
 import { elementsManager } from "@/elementsManager"
 import { CstPathItem } from "@/elements/cstPathHelper"
-import { ElementListType, HorizontalGroupElement, LabelElement, VerticalGroupElement } from "@/elements"
+import { ElementListType, GroupElement, LabelElement } from "@/elements"
 import { cleanString } from "./utils"
 
 test("insert new element in empty form", () => {
@@ -61,8 +61,7 @@ test("insert new element in group", () => {
   const newLabel = elementsManager.getNewValue("Надпись") as LabelElement
 
   const path = [
-    new CstPathItem(HorizontalGroupElement, 0, ElementListType.Items),
-    new CstPathItem(VerticalGroupElement, 0, ElementListType.Items),
+    new CstPathItem(GroupElement, 0, ElementListType.Items),
     new CstPathItem(LabelElement, 0, ElementListType.Items),
   ]
 

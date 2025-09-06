@@ -28,6 +28,10 @@ export class ButtonGroupElement extends BaseElementWithoutAttributes {
   public get isContainer(): boolean {
     return false
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(ButtonGroupElement, "ГруппаКнопок")

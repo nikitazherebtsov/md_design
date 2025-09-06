@@ -1,7 +1,7 @@
 import { test } from "vitest"
 import { expectFormattedText } from "./utils"
 
-test("Group with two groups", () => {
+test("Vertical group with two horizontal groups", () => {
   const before = `
 #Группа 1 #Группа 2
   Элемент группы 1 + Элемент группы 2`
@@ -90,18 +90,6 @@ test("Set property to vertical group", () => {
   expectFormattedText(before, after)
 })
 
-test("Create group without title", () => {
-  const before = `
-# #
-Элемент группы 1 + Элемент группы 2`
-
-  const after = `
-#                  #
-  Элемент группы 1 +Элемент группы 2`
-
-  expectFormattedText(before, after)
-})
-
 test("Set property to horizontal group", () => {
   const before = `
 {ЦветФона=Красный}
@@ -161,6 +149,20 @@ test("Vertical group with behavior", () => {
   const after = `
 #####Группа
   Элемент`
+
+  expectFormattedText(before, after)
+})
+
+test("Horizontal group with two elements", () => {
+  const before = `
+# #
+  Элемент группы 1 + Элемент группы 2: Значение
+  + _____`
+
+  const after = `
+#                  #
+  Элемент группы 1 +Элемент группы 2: Значение
+                   +                  ________`
 
   expectFormattedText(before, after)
 })

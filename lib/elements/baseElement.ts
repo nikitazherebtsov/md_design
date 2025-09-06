@@ -40,6 +40,8 @@ export abstract class BaseElement implements IBaseElement {
 
   public static readonly childrenFields: ElementListType[] = []
 
+  public abstract canBeInOneLine(): boolean
+
   public getList(listType: ElementListType): Array<IBaseElement> | undefined {
     if (!this.getChildrenFields().includes(listType)) return undefined
 

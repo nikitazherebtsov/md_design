@@ -1,6 +1,6 @@
 import { FormElement } from "./formElement"
 import { PageElement } from "./pageElement"
-import { VerticalGroupElement } from "./verticalGroupElement"
+import { GroupElement } from "./groupElement"
 import { EditorContainerElement } from "./editorContainerElement"
 
-export type TableContainerElement = FormElement | PageElement | VerticalGroupElement | EditorContainerElement
+export type TableContainerElement = FormElement | PageElement | GroupElement | EditorContainerElement

@@ -1,5 +1,5 @@
-import { TreeToTableConverter } from "@/formatter/table/tableToTreeConverter"
-import { ConvertableTreeNode } from "@/formatter/table/interfaces"
+import { TreeToTableConverter } from "@/formatter/tables/tableToTreeConverter"
+import { ConvertableTreeNode } from "@/formatter/tables/interfaces"
 import { expect, test } from "vitest"
 
 class TestTreeNode implements ConvertableTreeNode {

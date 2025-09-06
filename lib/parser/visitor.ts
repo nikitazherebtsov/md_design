@@ -13,8 +13,6 @@ import {
   FormElement,
   InputElement,
   LabelElement,
-  HorizontalGroupElement,
-  VerticalGroupElement,
   CheckboxElement,
   RadioButtonElement,
   PagesElement,
@@ -27,12 +25,12 @@ import {
   TableColumnElement,
   TableColumnGroupElement,
   TableCellElement,
-  OneLineGroupElement,
   EditorContainerElement,
   TableEmptyElement,
   TypeDescription,
+  GroupElement,
 } from "../elements/index"
-import { ITypeDescription } from "@/elements/interfaces"
+import { IBaseElement, IGroupElement, ITypeDescription } from "@/elements/interfaces"
 import { TypeProcessor } from "./typeProcessor"
 
 const BaseVisitor = new Parser().getBaseCstVisitorConstructor()
@@ -113,29 +111,46 @@ export class Visitor extends BaseVisitor {
 
   // #region groups
 
-  horizontalGroup(ctx: HorizontalGroupDictionary): HorizontalGroupElement {
-    const result = new HorizontalGroupElement()
+  horizontalGroup(ctx: HorizontalGroupDictionary): IGroupElement {
+    // single vertical group
+    if (ctx.Items.length == 1) {
+      const items = this.visitAll(ctx.Items, { canShrink: false })
+      return items[0]
+    }
+
+    const items = this.visitAll(ctx.Items, { canShrink: true })
+
+    const result = new GroupElement()
+    result.group = "Горизонтальная"
 
     this.visit(ctx.properties, { element: result })
 
-    result.add(ElementListType.Items, this.visitAll(ctx.Items))
+    result.add(ElementListType.Items, items)
 
     return result
   }
 
-  verticalGroup(ctx: CstChildrenDictionary): VerticalGroupElement {
-    const result = new VerticalGroupElement()
+  verticalGroup(ctx: CstChildrenDictionary, params: { canShrink: boolean }): IBaseElement {
+    const groupElement = new GroupElement()
+    groupElement.group = "Вертикальная"
 
     const groupHeader = ctx.GroupHeader[0] as CstNode
 
     let header = this.joinTokens(groupHeader.children.GroupHeaderText)
-    this.setProperty(result, "Заголовок", header)
+    this.setProperty(groupElement, "Заголовок", header)
 
-    this.setGroupDisplayAndBehavior(result, groupHeader)
+    this.setGroupDisplayAndBehavior(groupElement, groupHeader)
 
-    this.visit(groupHeader.children.properties as CstNode[], { element: result })
+    this.visit(groupHeader.children.properties as CstNode[], { element: groupElement })
 
-    result.add(ElementListType.Items, this.visitAll(ctx.Items as CstNode[]))
+    const items = this.visitAll(ctx.Items as CstNode[])
+
+    groupElement.add(ElementListType.Items, items)
+
+    let result: IBaseElement = groupElement
+    if (params.canShrink && groupElement.canShrink()) {
+      result = groupElement.items[0] as IBaseElement
+    }
 
     let headerTokens = [...(groupHeader.children.GroupHeaderText ?? []), ...(groupHeader.children.Hash ?? [])]
     this.semanticTokensManager.add(SemanticTokensTypes.VerticalGroupHeader, headerTokens, result)
@@ -144,7 +159,7 @@ export class Visitor extends BaseVisitor {
     return result
   }
 
-  private setGroupDisplayAndBehavior(verticalGroup: VerticalGroupElement, groupHeader: CstNode): void {
+  private setGroupDisplayAndBehavior(verticalGroup: GroupElement, groupHeader: CstNode): void {
     const hash = this.joinTokens(groupHeader.children.Hash)
 
     const count = hash?.length ?? 1
@@ -175,8 +190,9 @@ export class Visitor extends BaseVisitor {
     }
   }
 
-  oneLineGroup(ctx: CstChildrenDictionary): OneLineGroupElement {
-    const result = new OneLineGroupElement()
+  oneLineGroup(ctx: CstChildrenDictionary): GroupElement {
+    const result = new GroupElement()
+    result.group = "Горизонтальная"
 
     this.visit(ctx.properties as CstNode[], { element: result })
 

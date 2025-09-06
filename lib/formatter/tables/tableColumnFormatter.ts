@@ -1,10 +1,13 @@
 import { TableColumnElement } from "@/elements/tableColumnElement"
 import * as t from "../../parser/lexer"
-
-import { IFormatter } from "../formFormatter"
 import { PropertiesFormatter } from "../propertiesFormatter"
+import { BaseFormatter } from "../baseFormatter"
+import { FormatterFactory } from "../formatterFactory"
+import { BaseElementMatcherStrategy } from "../matcher/baseElementMatcherStrategy"
+import { ConditionWrapInGroupStrategy } from "../indentation/conditionWrapInGroupStrategy"
+import { TableColumnGroupElement } from "@/elements/tableColumnGroupElement"
 
-export class TableColumnFormatter implements IFormatter<TableColumnElement> {
+export class TableColumnFormatter extends BaseFormatter<TableColumnElement> {
   private readonly groupSymbol = t.Dash.LABEL
 
   public format(element: TableColumnElement): string[] {
@@ -22,8 +25,7 @@ export class TableColumnFormatter implements IFormatter<TableColumnElement> {
       description = `${this.groupSymbol} ${description} ${this.groupSymbol}`
     }
 
-    const propertiesFormatter = new PropertiesFormatter()
-    const properties = propertiesFormatter.format(element, { excludeProperties })
+    const properties = PropertiesFormatter.render(element, { excludeProperties })
     description += properties.join("")
 
     description = ` ${description} `
@@ -31,3 +33,11 @@ export class TableColumnFormatter implements IFormatter<TableColumnElement> {
     return [description]
   }
 }
+
+FormatterFactory.register(
+  new TableColumnFormatter(new BaseElementMatcherStrategy(TableColumnElement), new ConditionWrapInGroupStrategy())
+)
+
+FormatterFactory.register(
+  new TableColumnFormatter(new BaseElementMatcherStrategy(TableColumnGroupElement), new ConditionWrapInGroupStrategy())
+)

@@ -19,6 +19,10 @@ export class EditorContainerElement extends BaseElement {
   public get isContainer(): boolean {
     return true
   }
+
+  public canBeInOneLine(): boolean {
+    return false
+  }
 }
 
 PlainToClassDiscriminator.addClass(EditorContainerElement, "КонтейнерРедактора")

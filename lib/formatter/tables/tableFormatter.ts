@@ -3,23 +3,26 @@ import * as t from "@/parser/lexer"
 import { TableColumnElement } from "@/elements/tableColumnElement"
 import { TableElement, TableHeaderElement } from "@/elements/tableElement"
 import { TableRowElement } from "@/elements/tableRowElement"
-import { FormFormatterFactory } from "../formatterFactory"
-import { IFormatter } from "../formFormatter"
+import { FormatterFactory } from "../formatterFactory"
 import { TableFormatterColumn, TableHeaderRow } from "./tableFormatterColumn"
 import { TableFormatterRowCell } from "./tableFormatterRowCell"
 import { TableFormatterSeparator } from "./tableFormatterSeparator"
 import { TreeToTableConverter } from "./tableToTreeConverter"
 import { ConvertableTreeNode, ITableFormatterCell } from "./interfaces"
 import { TableCellElement } from "@/elements"
+import { BaseFormatter } from "../baseFormatter"
+import { BaseElementMatcherStrategy } from "../matcher/baseElementMatcherStrategy"
+import { ConditionWrapInGroupStrategy } from "../indentation/conditionWrapInGroupStrategy"
+import { IFormatterParams } from "../interfaces"
+import { PropertiesFormatter } from "../propertiesFormatter"
 
-export class TableFormatter implements IFormatter<TableElement> {
+export class TableFormatter extends BaseFormatter<TableElement> {
   private readonly rowSeparator: string = t.VBar.LABEL as string
 
-  public format(element: TableElement): string[] {
+  public format(element: TableElement, _params: IFormatterParams): string[] {
     let result: string[] = []
 
-    const propertiesFormatter = FormFormatterFactory.getPropertiesFormatter()
-    const properties = propertiesFormatter.formatSingleLine(element)
+    const properties = PropertiesFormatter.renderInineProperties(element)
     if (properties.length > 0) {
       result.push(properties.join(""))
     }
@@ -168,3 +171,7 @@ export class TableFormatter implements IFormatter<TableElement> {
     }
   }
 }
+
+FormatterFactory.register(
+  new TableFormatter(new BaseElementMatcherStrategy(TableElement), new ConditionWrapInGroupStrategy())
+)

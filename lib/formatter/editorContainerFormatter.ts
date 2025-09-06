@@ -1,14 +1,16 @@
 import { EditorContainerElement } from "../elements/editorContainerElement"
 import trimEnd from "@ungap/trim-end"
-import { FormFormatterFactory } from "./formatterFactory"
-import { IFormatter } from "./formFormatter"
+import { FormatterFactory } from "./formatterFactory"
+import { BaseFormatter } from "./baseFormatter"
+import { BaseElementMatcherStrategy } from "./matcher/baseElementMatcherStrategy"
+import { ConditionWrapInGroupStrategy } from "./indentation/conditionWrapInGroupStrategy"
 
-export class EditorContainerFormatter implements IFormatter<EditorContainerElement> {
+export class EditorContainerFormatter extends BaseFormatter<EditorContainerElement> {
   public format(element: EditorContainerElement): string[] {
     const result: string[] = []
 
     for (const item of element.items) {
-      const formatted = FormFormatterFactory.getFormatter(item).format(item)
+      const formatted = FormatterFactory.render(item)
       result.push(...formatted)
     }
 
@@ -19,3 +21,10 @@ export class EditorContainerFormatter implements IFormatter<EditorContainerEleme
     return result
   }
 }
+
+FormatterFactory.register(
+  new EditorContainerFormatter(
+    new BaseElementMatcherStrategy(EditorContainerElement),
+    new ConditionWrapInGroupStrategy()
+  )
+)

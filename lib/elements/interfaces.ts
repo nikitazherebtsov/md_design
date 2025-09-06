@@ -22,6 +22,18 @@ export interface IBaseElement {
   getAttributes(): IAttribute[]
 
   get isContainer(): boolean
+
+  canBeInOneLine(): boolean
+}
+
+export type BaseElementCtor = new (...args: any[]) => IBaseElement
+
+export interface IGroupElement extends IBaseElement {
+  isOneLineGroup(): boolean
+  get group(): string | undefined
+  set group(value: string | undefined)
+
+  canShrink(): boolean
 }
 
 export interface IAttribute {

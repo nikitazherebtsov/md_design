@@ -1,5 +1,5 @@
-import { BaseElement } from "../elements/baseElement"
-import * as t from "../parser/lexer"
+import { BaseElement } from "../../elements/baseElement"
+import * as t from "../../parser/lexer"
 import { TypeDescription } from "@/elements/typeDescription"
 import { DateFractions } from "@/elements/types"
 import { format as fnsFormat } from "date-fns"

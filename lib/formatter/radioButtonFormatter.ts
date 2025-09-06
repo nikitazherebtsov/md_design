@@ -1,16 +1,19 @@
 import { RadioButtonElement } from "../elements/radioButtonElement"
-import { FormFormatterFactory } from "./formatterFactory"
-import { IFormatter } from "./formFormatter"
-import { FormatterUtils } from "./formatterUtils"
+import { FormatterFactory } from "./formatterFactory"
+import { BaseElementMatcherStrategy } from "./matcher/baseElementMatcherStrategy"
+import { ConditionWrapInGroupStrategy } from "./indentation/conditionWrapInGroupStrategy"
+import { FormatterUtils } from "./helpers/formatterUtils"
+import { BaseFormatter } from "./baseFormatter"
+import { IFormatterParams } from "./interfaces"
+import { PropertiesFormatter } from "./propertiesFormatter"
 
-export class RadioButtonFormatter implements IFormatter<RadioButtonElement> {
-  public format(element: RadioButtonElement): string[] {
+export class RadioButtonFormatter extends BaseFormatter<RadioButtonElement> {
+  public format(element: RadioButtonElement, _params: IFormatterParams): string[] {
     let excludeProperties = ["Заголовок", "ГоризонтальноеПоложениеВГруппе", "СписокВыбора"]
 
     FormatterUtils.excludeStretchProperties(excludeProperties, element)
 
-    const propertiesFormatter = FormFormatterFactory.getPropertiesFormatter()
-    const properties = propertiesFormatter.format(element, { excludeProperties })
+    const properties = PropertiesFormatter.render(element, { excludeProperties })
 
     let result = FormatterUtils.getAlignmentAtLeft(element)
 
@@ -38,3 +41,7 @@ export class RadioButtonFormatter implements IFormatter<RadioButtonElement> {
     return result
   }
 }
+
+FormatterFactory.register(
+  new RadioButtonFormatter(new BaseElementMatcherStrategy(RadioButtonElement), new ConditionWrapInGroupStrategy())
+)

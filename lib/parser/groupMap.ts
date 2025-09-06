@@ -267,10 +267,6 @@ export class GroupMap {
     return result
   }
 
-  // private getLastContainerAtIndent(indent: number): ContainerNode {
-
-  // }
-
   private addToNextLine(item: ContainerNode): void {
     this.nextLineContentainers.push(item)
   }

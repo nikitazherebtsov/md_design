@@ -1,85 +1,47 @@
-import { FormFormatter, IFormatter } from "./formFormatter"
-import { InputFormatter } from "./inputFormatter"
-import { LabelFormatter } from "./labelFormatter"
-import { HorizontalGroupFormatter } from "./horizontalGroupFormatter"
-import { VerticalGroupFormatter } from "./verticalGroupFormatter"
-import { PropertiesFormatter } from "./propertiesFormatter"
-import { CheckboxFormatter } from "./checkboxFormatter"
-import { RadioButtonFormatter } from "./radioButtonFormatter"
-import { PageFormatter } from "./pageFormatter"
-import { PagesFormatter } from "./pagesFormatter"
-import { CommandBarFormatter } from "./commandBarFormatter"
-import { ButtonFormatter } from "./buttonFormatter"
-import { ButtonGroupFormatter } from "./buttonGroupFormatter"
-import { TableFormatter } from "./table/tableFormatter"
-import { TableCellFormatter } from "./table/tableCellFormatter"
-import { TableColumnFormatter } from "./table/tableColumnFormatter"
-import { OneLineGroupFormatter } from "./oneLineGroupFormatter"
-import { EditorContainerFormatter } from "./editorContainerFormatter"
-import {
-  BaseElement,
-  FormElement,
-  InputElement,
-  LabelElement,
-  HorizontalGroupElement,
-  VerticalGroupElement,
-  CheckboxElement,
-  RadioButtonElement,
-  PagesElement,
-  PageElement,
-  CommandBarElement,
-  ButtonElement,
-  ButtonGroupElement,
-  TableElement,
-  TableColumnElement,
-  TableColumnGroupElement,
-  TableCellElement,
-  OneLineGroupElement,
-  EditorContainerElement,
-} from "@/elements"
+import { IFormatter, IFormatterParams, WrapInGroupStrategy } from "./interfaces"
+import { IBaseElement } from "@/elements/interfaces"
+import { SeparatorsMap } from "./separatorsMap"
 
-export class FormFormatterFactory {
-  private static readonly formatters = new Map<typeof BaseElement, new () => IFormatter<BaseElement>>()
+export class FormatterFactory {
+  private static readonly formatters = new Array<IFormatter<IBaseElement>>()
+  private static readonly defaultParams = { wrapInGroup: WrapInGroupStrategy.Auto, level: 0, isFirst: true }
 
-  public static initialize(): void {
-    this.registerFormatter(FormElement, FormFormatter)
-    this.registerFormatter(InputElement, InputFormatter)
-    this.registerFormatter(LabelElement, LabelFormatter)
-    this.registerFormatter(HorizontalGroupElement, HorizontalGroupFormatter)
-    this.registerFormatter(VerticalGroupElement, VerticalGroupFormatter)
-    this.registerFormatter(CheckboxElement, CheckboxFormatter)
-    this.registerFormatter(RadioButtonElement, RadioButtonFormatter)
-    this.registerFormatter(PagesElement, PagesFormatter)
-    this.registerFormatter(PageElement, PageFormatter)
-    this.registerFormatter(CommandBarElement, CommandBarFormatter)
-    this.registerFormatter(ButtonElement, ButtonFormatter)
-    this.registerFormatter(ButtonGroupElement, ButtonGroupFormatter)
-    this.registerFormatter(TableElement, TableFormatter)
-    this.registerFormatter(TableColumnElement, TableColumnFormatter)
-    this.registerFormatter(TableColumnGroupElement, TableColumnFormatter)
-    this.registerFormatter(TableCellElement, TableCellFormatter)
-    this.registerFormatter(OneLineGroupElement, OneLineGroupFormatter)
-    this.registerFormatter(EditorContainerElement, EditorContainerFormatter)
+  public static register(formatter: IFormatter<IBaseElement>): void {
+    this.formatters.push(formatter)
   }
 
-  public static registerFormatter(
-    elementKind: typeof BaseElement,
-    formatterCtor: new () => IFormatter<BaseElement>
-  ): void {
-    this.formatters.set(elementKind, formatterCtor)
+  public static render(element: IBaseElement, params: IFormatterParams = this.defaultParams): string[] {
+    params = { ...this.defaultParams, ...params }
+
+    const currentFormatter = this.getFormatter(element, params)
+    const result = currentFormatter.render(element, params)
+    return result
   }
 
-  public static getFormatter(element: BaseElement): IFormatter<BaseElement> {
-    const FormatterCtor = this.formatters.get(element.constructor as typeof BaseElement)
-    if (!FormatterCtor) {
-      throw new Error(`Formatter for ${element.constructor.name} not found`)
+  public static renderItems(items: IBaseElement[]): string[] {
+    const result: string[] = []
+
+    const indent = ""
+    let previousItem: IBaseElement | undefined = undefined
+    for (const item of items) {
+      if (SeparatorsMap.isNeedSeparator(item, previousItem)) {
+        result.push(indent)
+      }
+
+      const text = FormatterFactory.render(item, this.defaultParams)
+      result.push(...text)
+
+      previousItem = item
     }
-    return new FormatterCtor()
+    return result
   }
 
-  public static getPropertiesFormatter(): PropertiesFormatter {
-    return new PropertiesFormatter()
+  private static getFormatter(element: IBaseElement, params: IFormatterParams): IFormatter<IBaseElement> {
+    for (const formatter of this.formatters) {
+      if (formatter.canRender(element, params)) {
+        return formatter
+      }
+    }
+    throw new Error(`Formatter for ${element.constructor.name} not found`)
   }
 }
-
-FormFormatterFactory.initialize()

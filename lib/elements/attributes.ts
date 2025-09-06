@@ -1,7 +1,7 @@
 import { Expose, Type } from "class-transformer"
 import { IAttribute, ITypeDescription } from "./interfaces"
-import { PropertiesFormatter } from "@/formatter/propertiesFormatter"
 import { TypeDescription } from "./typeDescription"
+import { PropertiesFormatter } from "@/formatter/propertiesFormatter"
 
 export class Attribute implements IAttribute {
   @Expose({ name: "Имя" })
@@ -30,7 +30,6 @@ export class Attribute implements IAttribute {
     this.isTable = typeDescription.isTable()
     this.isNew = typeDescription.isNew
 
-    const formatter = new PropertiesFormatter()
-    this.singleTypeDescription = formatter.formatTypeDescription(typeDescription)
+    this.singleTypeDescription = PropertiesFormatter.formatTypeDescription(typeDescription)
   }
 }

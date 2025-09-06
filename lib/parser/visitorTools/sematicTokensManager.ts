@@ -1,8 +1,7 @@
 import { CstElement, CstNode, IToken } from "chevrotain"
-import { BaseElement } from "@/elements/baseElement"
-// import * as monaco from "monaco-editor-core"
 import trimStart from "@ungap/trim-start"
 import trimEnd from "@ungap/trim-end"
+import { IBaseElement } from "@/elements/interfaces"
 
 export enum SemanticTokensTypes {
   FormHeader,
@@ -32,9 +31,9 @@ class SemanticToken {
   public startColumnPayload: number = Number.MAX_SAFE_INTEGER
   public endColumnPayload: number = 0
 
-  public element: BaseElement
+  public element: IBaseElement
   public type: SemanticTokensTypes
-  constructor(type: SemanticTokensTypes, element: BaseElement) {
+  constructor(type: SemanticTokensTypes, element: IBaseElement) {
     this.type = type
     this.element = element
   }
@@ -48,7 +47,7 @@ export class SemanticTokensManager {
     this.rows = []
   }
 
-  public add(type: SemanticTokensTypes, ctx: CstElement[], element: BaseElement, exclude: string[] = []) {
+  public add(type: SemanticTokensTypes, ctx: CstElement[], element: IBaseElement, exclude: string[] = []) {
     if (!ctx || ctx.length === 0) {
       return
     }
@@ -168,7 +167,7 @@ export class SemanticTokensManager {
     [SemanticTokensTypes.Properties]: { inlineClassName: "edit-properties-decoration" },
   }
 
-  private addTokens(ctx: CstElement[], type: SemanticTokensTypes, element: BaseElement, exclude: string[] = []) {
+  private addTokens(ctx: CstElement[], type: SemanticTokensTypes, element: IBaseElement, exclude: string[] = []) {
     for (let node of ctx) {
       if ((node as CstNode).children) {
         for (const [key, value] of Object.entries((node as CstNode).children)) {
@@ -184,7 +183,7 @@ export class SemanticTokensManager {
     }
   }
 
-  private addToken(type: SemanticTokensTypes, element: BaseElement, token: IToken) {
+  private addToken(type: SemanticTokensTypes, element: IBaseElement, token: IToken) {
     const semanticToken: SemanticToken = new SemanticToken(type, element)
     semanticToken.startLine = token.startLine ?? 0
     semanticToken.startColumn = token.startColumn ?? 0

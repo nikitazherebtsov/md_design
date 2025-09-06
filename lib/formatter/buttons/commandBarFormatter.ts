@@ -1,22 +1,25 @@
-import { ButtonElement } from "../elements/buttonElement"
-import { ButtonGroupElement } from "../elements/buttonGroupElement"
-import { CommandBarElement } from "../elements/commandBarElement"
-import * as t from "../parser/lexer"
-import { FormFormatterFactory } from "./formatterFactory"
-import { FormatterUtils } from "./formatterUtils"
-import { IFormatter } from "./formFormatter"
+import { ButtonElement } from "../../elements/buttonElement"
+import { ButtonGroupElement } from "../../elements/buttonGroupElement"
+import { CommandBarElement } from "../../elements/commandBarElement"
+import * as t from "../../parser/lexer"
+import { FormatterFactory } from "../formatterFactory"
+import { FormatterUtils } from "../helpers/formatterUtils"
+import { BaseElementMatcherStrategy } from "../matcher/baseElementMatcherStrategy"
+import { ConditionWrapInGroupStrategy } from "../indentation/conditionWrapInGroupStrategy"
+import { BaseFormatter } from "../baseFormatter"
+import { PropertiesFormatter } from "../propertiesFormatter"
+import { FormGroupType } from "@/metadata/interface"
 
 const SEPARATOR = " " + t.VBar.LABEL + " "
 const MENU_LEVEL_INDICATOR = t.Dots.LABEL as string
 const GROUP_INDICATOR = t.Dash.LABEL as string
 
-export class CommandBarFormatter implements IFormatter<CommandBarElement> {
+export class CommandBarFormatter extends BaseFormatter<CommandBarElement> {
   public format(element: CommandBarElement): string[] {
     const excludeProperties = ["ГоризонтальноеПоложениеВГруппе"]
     FormatterUtils.excludeStretchProperties(excludeProperties, element)
 
-    const propertiesFormatter = FormFormatterFactory.getPropertiesFormatter()
-    const properties = propertiesFormatter.formatSingleLine(element, { excludeProperties })
+    const properties = PropertiesFormatter.renderInineProperties(element, { excludeProperties })
 
     const buttons = element.getAllButtons()
     const { firstLineText, hasMenu } = this.formatFirstLine(buttons)
@@ -36,11 +39,11 @@ export class CommandBarFormatter implements IFormatter<CommandBarElement> {
     let hasMenu = false
 
     for (const button of buttons) {
-      if (button.elementKind === "Подменю") {
+      if (button.elementKind === FormGroupType.Popup) {
         hasMenu = true
       }
 
-      const text = FormFormatterFactory.getFormatter(button).format(button)
+      const text = FormatterFactory.render(button)
       firstLine.push(text.join(""))
     }
 
@@ -74,7 +77,7 @@ export class CommandBarFormatter implements IFormatter<CommandBarElement> {
     const result: string[] = [t.LAngle.LABEL + " " + firstLineText]
 
     for (const button of buttons) {
-      if (button.elementKind === "Подменю") {
+      if (button.elementKind === FormGroupType.Popup) {
         this.formatMenuLine(result, button, 0)
       }
     }
@@ -86,17 +89,16 @@ export class CommandBarFormatter implements IFormatter<CommandBarElement> {
   }
 
   private formatMenuLine(result: string[], element: ButtonElement | ButtonGroupElement, level: number): void {
-    if (element.elementKind === "ГруппаКнопок") {
+    if (element.elementKind === FormGroupType.ButtonGroup) {
       result.push(this.getTextWithLevel(GROUP_INDICATOR, level))
       this.formatMenuLineSubitems(result, element, level + 1)
       return
     }
 
-    const isMenu = level === 0
-    const text = FormFormatterFactory.getFormatter(element).format(element, isMenu).join("")
+    const text = FormatterFactory.render(element).join("")
     result.push(this.getTextWithLevel(text, level))
 
-    if (element.elementKind === "Подменю") {
+    if (element.elementKind === FormGroupType.Popup) {
       this.formatMenuLineSubitems(result, element as ButtonElement, level + 1)
     }
   }
@@ -117,3 +119,7 @@ export class CommandBarFormatter implements IFormatter<CommandBarElement> {
     return levelText ? levelText + " " + text : text
   }
 }
+
+FormatterFactory.register(
+  new CommandBarFormatter(new BaseElementMatcherStrategy(CommandBarElement), new ConditionWrapInGroupStrategy())
+)
